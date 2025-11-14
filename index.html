@@ -156,11 +156,15 @@
 
     .select,
     .pill-row button {
-      flex: 0;
-      min-width: 70px;
+      flex: 0 0 auto;      /* size to content, don’t stretch */
+      min-width: 0;        /* no forced width */
+      max-width: 100%;
       text-align: center;
-      white-space: nowrap;
+      white-space: normal; /* allow wrapping inside the pill */
+      line-height: 1.2;
+      padding: 7px 14px;   /* a bit more breathing room */
     }
+
 
     .select {
       width: 100%;
