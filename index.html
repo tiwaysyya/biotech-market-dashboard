@@ -154,24 +154,38 @@
       margin-bottom: 3px;
     }
 
-    .select,
-    .pill-row button {
-      display: inline-block;      /* not stretched by flex */
-      flex: none;                 /* do not auto-grow */
-      padding: 7px 14px;
-      font-size: 13px;
+    .select {
       border-radius: 999px;
       border: 1px solid var(--border-soft);
       background: #fdf3e7;
+      padding: 7px 10px;
+      font-size: 13px;
       color: var(--text-main);
-      text-align: center;
-      white-space: normal;        /* allows wrapping */
-      line-height: 1.2;
-      max-width: 100%;  /* a bit more breathing room */
+      outline: none;
+      width: 100%;
     }
 
-    .select {
-      width: 100%;
+    /* GENERAL BUTTON STYLE */
+    button {
+      padding: 7px 12px;
+      cursor: pointer;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: #fdf3e7;
+      font-size: 13px;
+      color: var(--text-main);
+      transition: background 0.15s ease, transform 0.08s ease, box-shadow 0.15s ease, color 0.15s ease;
+    }
+
+    button:hover {
+      background: #f6dfc5;
+      box-shadow: 0 4px 12px rgba(153, 102, 68, 0.25);
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: none;
     }
 
     .pill-row {
@@ -180,20 +194,17 @@
       gap: 8px;
     }
 
+    /* PILL BUTTONS (filters) */
     .pill-row button {
-      display: inline-block;      /* not stretched by flex */
-      flex: none;                 /* do not auto-grow */
+      display: inline-block;
+      flex: 0 0 auto !important;   /* stop stretching */
       padding: 7px 14px;
       font-size: 13px;
-      border-radius: 999px;
-      border: 1px solid var(--border-soft);
-      background: #fdf3e7;
-      color: var(--text-main);
       text-align: center;
-      white-space: normal;        /* allows wrapping */
+      white-space: normal;         /* allow wrapping */
       line-height: 1.2;
       max-width: 100%;
-     }
+    }
 
     .pill-row button.active {
       background: linear-gradient(135deg, var(--accent), var(--accent-strong));
@@ -493,9 +504,7 @@
       <div class="top-row">
         <section>
           <div class="section-title">Market snapshot</div>
-          <div class="kpi-grid" id="kpiGrid">
-            <!-- KPI cards injected by JS -->
-          </div>
+          <div class="kpi-grid" id="kpiGrid"></div>
         </section>
 
         <aside class="filters">
@@ -543,13 +552,9 @@
         <section class="panel">
           <div class="panel-header">
             <div class="panel-title">Therapeutic area heatmap</div>
-            <div class="panel-subtitle" id="resultsSummary">
-              <!-- filled by JS -->
-            </div>
+            <div class="panel-subtitle" id="resultsSummary"></div>
           </div>
-          <div class="area-list" id="areaList">
-            <!-- cards injected by JS -->
-          </div>
+          <div class="area-list" id="areaList"></div>
         </section>
 
         <aside class="panel">
@@ -576,14 +581,13 @@
   </div>
 
   <script>
-    // Simple mock data so the dashboard feels realistic
     const areas = [
       {
         id: "onco_io",
         name: "Oncology - Immuno-oncology",
         segment: "Oncology",
         modalities: ["bio", "cellgene"],
-        tamUSD: 85, // billions
+        tamUSD: 85,
         cagr: 11.5,
         trials: 1450,
         competition: 9.2,
@@ -591,7 +595,7 @@
         pricingPower: 8.0,
         dealActivity: 9.0,
         investorMomentum: 8.8,
-        recommendation: "partner", // enter | partner | watch | avoid
+        recommendation: "partner",
         rationaleShort: "Crowded but still high value for differentiated mechanisms and smart combinations.",
         personaNotes: {
           founder: "Differentiation is everything here. Strong biomarkers, niche indications and combo rationale are essential.",
@@ -820,12 +824,8 @@
 
     function applyFilters() {
       return areas.filter(a => {
-        if (activePlayFilter !== "all" && a.recommendation !== activePlayFilter) {
-          return false;
-        }
-        if (activeModalityFilter !== "all" && !a.modalities.includes(activeModalityFilter)) {
-          return false;
-        }
+        if (activePlayFilter !== "all" && a.recommendation !== activePlayFilter) return false;
+        if (activeModalityFilter !== "all" && !a.modalities.includes(activeModalityFilter)) return false;
         return true;
       });
     }
@@ -859,6 +859,23 @@
       });
     }
 
+    function computeAttractiveness(area) {
+      const growthScore = Math.min(area.cagr / 3, 10);
+      const tamScore = Math.min(area.tamUSD / 12, 10);
+      const competitionPenalty = 10 - area.competition * 0.7;
+      const unmetScore = area.unmetNeed;
+      const momentumScore = area.investorMomentum;
+
+      const raw =
+        growthScore * 0.2 +
+        tamScore * 0.2 +
+        competitionPenalty * 0.15 +
+        unmetScore * 0.2 +
+        momentumScore * 0.25;
+
+      return Math.max(2, Math.min(9.8, raw));
+    }
+
     function renderAreas() {
       const filtered = applyFilters();
       const listEl = document.getElementById("areaList");
@@ -871,9 +888,7 @@
         const card = document.createElement("div");
         card.className = "area-card";
         card.dataset.id = a.id;
-        if (a.id === activeAreaId) {
-          card.classList.add("active");
-        }
+        if (a.id === activeAreaId) card.classList.add("active");
 
         const left = document.createElement("div");
         const name = document.createElement("div");
@@ -888,15 +903,10 @@
 
         const recChip = document.createElement("span");
         recChip.className = "chip chip-small";
-        if (a.recommendation === "enter") {
-          recChip.classList.add("chip-enter");
-        } else if (a.recommendation === "partner") {
-          recChip.classList.add("chip-partner");
-        } else if (a.recommendation === "watch") {
-          recChip.classList.add("chip-watch");
-        } else if (a.recommendation === "avoid") {
-          recChip.classList.add("chip-bad");
-        }
+        if (a.recommendation === "enter") recChip.classList.add("chip-enter");
+        else if (a.recommendation === "partner") recChip.classList.add("chip-partner");
+        else if (a.recommendation === "watch") recChip.classList.add("chip-watch");
+        else if (a.recommendation === "avoid") recChip.classList.add("chip-bad");
         recChip.textContent = formatRecommendation(a.recommendation);
 
         tags.appendChild(segChip);
@@ -947,7 +957,6 @@
         listEl.appendChild(card);
       });
 
-      // If no active area but we have results, select first
       if (!activeAreaId && filtered.length > 0) {
         activeAreaId = filtered[0].id;
         renderAreas();
@@ -955,24 +964,6 @@
       }
 
       renderKpis(filtered);
-    }
-
-    function computeAttractiveness(area) {
-      // Very simple weighted blend of scores, tuned to feel "consultanty"
-      const growthScore = Math.min(area.cagr / 3, 10); // normalise growth
-      const tamScore = Math.min(area.tamUSD / 12, 10); // bigger markets score higher
-      const competitionPenalty = 10 - area.competition * 0.7;
-      const unmetScore = area.unmetNeed;
-      const momentumScore = area.investorMomentum;
-
-      const raw =
-        growthScore * 0.2 +
-        tamScore * 0.2 +
-        competitionPenalty * 0.15 +
-        unmetScore * 0.2 +
-        momentumScore * 0.25;
-
-      return Math.max(2, Math.min(9.8, raw));
     }
 
     function renderDetail(area) {
@@ -1006,15 +997,10 @@
 
       const recChip = document.createElement("span");
       recChip.className = "chip chip-small";
-      if (area.recommendation === "enter") {
-        recChip.classList.add("chip-enter");
-      } else if (area.recommendation === "partner") {
-        recChip.classList.add("chip-partner");
-      } else if (area.recommendation === "watch") {
-        recChip.classList.add("chip-watch");
-      } else if (area.recommendation === "avoid") {
-        recChip.classList.add("chip-bad");
-      }
+      if (area.recommendation === "enter") recChip.classList.add("chip-enter");
+      else if (area.recommendation === "partner") recChip.classList.add("chip-partner");
+      else if (area.recommendation === "watch") recChip.classList.add("chip-watch");
+      else if (area.recommendation === "avoid") recChip.classList.add("chip-bad");
       recChip.textContent = formatRecommendation(area.recommendation);
 
       badges.appendChild(segChip);
@@ -1035,7 +1021,6 @@
         "Approx TAM: $" + area.tamUSD.toFixed(0) + "B, growing at ~" + area.cagr.toFixed(1) + "% per year. " +
         "There are an estimated " + area.trials + "+ active trials, with competition intensity scoring " +
         area.competition.toFixed(1) + "/10.";
-
       block1.appendChild(label1);
       block1.appendChild(body1);
 
@@ -1048,7 +1033,6 @@
       body2.className = "detail-body";
       const personaNote = area.personaNotes[activePersona] || "";
       body2.textContent = personaNote;
-
       block2.appendChild(label2);
       block2.appendChild(body2);
 
@@ -1142,9 +1126,7 @@
         activePersona = personaSelect.value;
         if (activeAreaId) {
           const current = areas.find(a => a.id === activeAreaId);
-          if (current) {
-            renderDetail(current);
-          }
+          if (current) renderDetail(current);
         }
       });
     }
