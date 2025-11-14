@@ -156,15 +156,19 @@
 
     .select,
     .pill-row button {
-      flex: 0 0 auto;      /* size to content, don’t stretch */
-      min-width: 0;        /* no forced width */
-      max-width: 100%;
+      display: inline-block;      /* not stretched by flex */
+      flex: none;                 /* do not auto-grow */
+      padding: 7px 14px;
+      font-size: 13px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: #fdf3e7;
+      color: var(--text-main);
       text-align: center;
-      white-space: normal; /* allow wrapping inside the pill */
+      white-space: normal;        /* allows wrapping */
       line-height: 1.2;
-      padding: 7px 14px;   /* a bit more breathing room */
+      max-width: 100%;  /* a bit more breathing room */
     }
-
 
     .select {
       width: 100%;
@@ -173,15 +177,23 @@
     .pill-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 8px;
     }
 
     .pill-row button {
-      flex: 0;
-      min-width: 70px;
+      display: inline-block;      /* not stretched by flex */
+      flex: none;                 /* do not auto-grow */
+      padding: 7px 14px;
+      font-size: 13px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: #fdf3e7;
+      color: var(--text-main);
       text-align: center;
-      white-space: nowrap;
-    }
+      white-space: normal;        /* allows wrapping */
+      line-height: 1.2;
+      max-width: 100%;
+     }
 
     .pill-row button.active {
       background: linear-gradient(135deg, var(--accent), var(--accent-strong));
