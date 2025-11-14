@@ -1,811 +1,374 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Biotech Market Landscape Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <style>
-/* -----------------------------------------------------------
-   PROFESSIONAL RESEARCH-DASHBOARD THEME
------------------------------------------------------------ */
-:root {
-  --bg-page: #f3f4f6;
-  --bg-panel: #ffffff;
-  --bg-soft: #f9fafb;
-  --border-soft: #e5e7eb;
-
-  --accent: #2563eb;
-  --accent-soft: #dbeafe;
-  --accent-strong: #1d4ed8;
-
-  --text-main: #111827;
-  --text-soft: #6b7280;
-  --text-faint: #9ca3af;
-
-  --good: #059669;
-  --bad: #dc2626;
-  --watch: #d97706;
-}
-
-/* Page Layout */
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: var(--bg-page);
-  color: var(--text-main);
-  padding: 18px 14px 40px;
-}
-
-.page {
-  max-width: 1150px;
-  margin: 0 auto;
-}
-
-header {
-  margin-bottom: 16px;
-}
-
-h1 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.subtitle {
-  font-size: 14px;
-  color: var(--text-soft);
-  margin-top: 4px;
-}
-
-/* Panels + Cards */
-.frame {
-  background: var(--bg-panel);
-  border: 1px solid var(--border-soft);
-  border-radius: 10px;
-  box-shadow: 0 8px 22px rgba(0,0,0,0.08);
-  padding: 16px 16px 22px;
-}
-
-.section-title {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: var(--text-faint);
-  margin-bottom: 6px;
-}
-
-/* KPI Row */
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
-
-.kpi-card {
-  padding: 10px;
-  background: var(--bg-soft);
-  border: 1px solid var(--border-soft);
-  border-radius: 8px;
-}
-
-.kpi-label {
-  font-size: 11px;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-}
-
-.kpi-value {
-  font-size: 19px;
-  font-weight: 600;
-  margin-top: 4px;
-}
-
-.kpi-sub {
-  font-size: 12px;
-  color: var(--text-soft);
-}
-
-/* Filters */
-.filters {
-  background: var(--bg-soft);
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid var(--border-soft);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.label {
-  font-size: 11px;
-  text-transform: uppercase;
-  color: var(--text-faint);
-}
-
-.select {
-  border: 1px solid var(--border-soft);
-  padding: 6px 8px;
-  border-radius: 6px;
-  font-size: 13px;
-}
-
-/* Pills */
-.pill-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.pill-row button {
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--border-soft);
-  background: #fff;
-  font-size: 12px;
-}
-
-.pill-row button.active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
-}
-
-/* Grid Layout */
-.top-row {
-  display: grid;
-  grid-template-columns: 2fr 1.2fr;
-  gap: 12px;
-}
-
-.layout-main {
-  margin-top: 16px;
-  display: grid;
-  grid-template-columns: 1.6fr 1.3fr;
-  gap: 14px;
-}
-
-/* Area Cards */
-.panel {
-  background: var(--bg-soft);
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid var(--border-soft);
-}
-
-.panel-title {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--text-faint);
-}
-
-.area-list {
-  max-height: 350px;
-  overflow-y: auto;
-}
-
-.area-card {
-  background: #fff;
-  padding: 8px;
-  margin-bottom: 6px;
-  border-radius: 6px;
-  border: 1px solid transparent;
-  display: grid;
-  grid-template-columns: 1.8fr 1.2fr 1fr;
-  cursor: pointer;
-}
-
-.area-card:hover {
-  border-color: #cbd5e1;
-  background: #f8fafc;
-}
-
-.area-card.active {
-  border-color: var(--accent);
-  background: #eff6ff;
-}
-
-.area-name {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.chip {
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 999px;
-  border: 1px solid var(--border-soft);
-}
-
-/* Recommendation chips */
-.chip-enter { background: #ecfdf5; color: var(--good); border-color: var(--good); }
-.chip-partner { background: #e0ecff; color: var(--accent-strong); border-color: var(--accent-strong); }
-.chip-watch { background: #fff7ed; color: var(--watch); border-color: var(--watch); }
-.chip-bad { background: #fef2f2; color: var(--bad); border-color: var(--bad); }
-
-/* Score Bar */
-.score-bar {
-  width: 100%;
-  height: 4px;
-  background: #e5e7eb;
-  border-radius: 999px;
-}
-
-.score-bar-inner {
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent-soft), var(--accent));
-  border-radius: 999px;
-}
-
-/* Detail Panel */
-.detail-title {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.detail-sub {
-  font-size: 13px;
-  color: var(--text-soft);
-}
-
-/* Mini Charts */
-.mini-bar-row {
-  display: flex;
-  gap: 10px;
-  font-size: 12px;
-}
-
-.mini-bar-track {
-  flex: 1;
-  height: 4px;
-  background: #e5e7eb;
-  border-radius: 999px;
-}
-
-.mini-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent-soft), var(--accent));
-  border-radius: 999px;
-}
-
-/* Quadrant */
-.quadrant {
-  background: #fff;
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid var(--border-soft);
-}
-
-.quadrant-inner {
-  position: relative;
-  width: 100%;
-  padding-bottom: 100%;
-  background: repeating-linear-gradient(#e5e7eb 0 1px, transparent 1px 25%);
-  border-radius: 6px;
-}
-
-.quadrant-point {
-  width: 11px;
-  height: 11px;
-  border-radius: 999px;
-  position: absolute;
-  transform: translate(-50%, -50%);
-  border: 2px solid #fff;
-  cursor: pointer;
-}
-
-/* Colors by recommendation */
-.quad-enter { background: var(--good); }
-.quad-partner { background: var(--accent); }
-.quad-watch { background: var(--watch); }
-.quad-avoid { background: var(--bad); }
-
-/* Footer */
-.footer-note {
-  margin-top: 16px;
-  font-size: 11px;
-  color: var(--text-soft);
-  text-align: right;
-}
-  </style>
-</head>
-
-
-
-<body>
-<div class="page">
-
-<header>
-  <h1>Biotech Market Landscape</h1>
-  <div class="subtitle">Equity research and strategic opportunity scan</div>
-</header>
-
-<div class="frame">
-  <!-- TOP ROW: KPI + FILTERS -->
-  <div class="top-row">
-
-    <section>
-      <div class="section-title">Market snapshot</div>
-      <div id="kpiGrid" class="kpi-grid"></div>
-    </section>
-
-    <aside class="filters">
-      <div>
-        <div class="label">Persona</div>
-        <select id="personaSelect" class="select">
-          <option value="founder">Biotech founder</option>
-          <option value="investor">Life sciences investor</option>
-          <option value="bigpharma">Big pharma BD</option>
-          <option value="consulting">Strategy consulting</option>
-        </select>
-      </div>
-
-      <div>
-        <div class="label">Recommended play</div>
-        <div id="playFilterRow" class="pill-row">
-          <button data-play="all" class="active">All areas</button>
-          <button data-play="enter">Enter</button>
-          <button data-play="partner">Partner</button>
-          <button data-play="watch">Watch</button>
-          <button data-play="avoid">Avoid</button>
-        </div>
-      </div>
-
-      <div>
-        <div class="label">Modality focus</div>
-        <div id="modalityFilterRow" class="pill-row">
-          <button data-modality="all" class="active">All</button>
-          <button data-modality="small">Small molecule</button>
-          <button data-modality="bio">Biologics</button>
-          <button data-modality="cellgene">Cell and gene</button>
-          <button data-modality="rna">RNA</button>
-        </div>
-      </div>
-    </aside>
-
-  </div>
-
-  <!-- MAIN GRID -->
-  <div class="layout-main">
-
-    <!-- AREA HEATMAP -->
-    <section class="panel">
-      <div class="panel-title">Therapeutic area heatmap</div>
-      <div id="resultsSummary" class="panel-subtitle"></div>
-      <div id="areaList" class="area-list"></div>
-    </section>
-
-    <!-- DETAIL PANEL -->
-    <aside class="panel">
-      <div class="panel-title">Area detail view</div>
-      <div id="detailPanel" style="margin-top:8px; font-size:13px; color:var(--text-soft);">
-        Select an area to view details.
-      </div>
-    </aside>
-
-  </div>
-
-  <!-- STRATEGY ROW -->
-  <div class="strategy-row" style="display:grid; grid-template-columns:1.6fr 1fr; gap:14px; margin-top:16px;">
-
-    <!-- QUADRANT -->
-    <section class="panel">
-      <div class="panel-title">Attractiveness vs feasibility</div>
-      <div class="quadrant">
-        <div id="quadrantInner" class="quadrant-inner"></div>
-      </div>
-    </section>
-
-    <!-- RISK CHART -->
-    <section class="panel">
-      <div class="panel-title">Risk & timing snapshot</div>
-      <div id="riskChart" class="mini-chart"></div>
-    </section>
-
-  </div>
-
-  <div class="footer-note">
-    Figures are directional and simplified for strategic discussion, not investment advice.
-  </div>
-
-</div>
-
-
-<script>
-
-//////////////////////////////////////////////////////////////////
-// DATA (same as before — shortened for space, but yours is full)
-//////////////////////////////////////////////////////////////////
-
-const areas = [
-  {
-    id: "neuro_deg",
-    name: "Neurodegeneration",
-    segment: "Neurology",
-    modalities: ["small","bio"],
-    tamUSD: 55,
-    cagr: 9.5,
-    trials: 520,
-    competition: 7.2,
-    unmetNeed: 9.5,
-    pricingPower: 7.8,
-    dealActivity: 7.0,
-    investorMomentum: 6.5,
-    recommendation: "watch",
-
-    timeToMarket: 7,
-    probSuccess: 0.12,
-    clinicalRisk: 9.0,
-    phaseCost: 8.0,
-    cashNeed: 8.0,
-
-    rationaleShort: "Huge burden and recent wins, but biology complexity keeps risk high.",
-    personaNotes: {
-      founder: "Biomarkers and stratification essential.",
-      investor: "Look at evidence quality over headline indication.",
-      bigpharma: "Selective entry with fast followers.",
-      consulting: "High modelling and access work demand."
+      unmetNeed: 9.0,
+      pricingPower: 3.5,
+      dealActivity: 4.0,
+      investorMomentum: 3.0,
+      recommendation: "avoid",
+
+      timeToMarket: 8.0,
+      probSuccess: 0.10,
+      clinicalRisk: 8.0,
+      phaseCost: 5.0,
+      cashNeed: 7.0,
+
+      rationaleShort: "High unmet need but commercial model remains broken without pull incentives.",
+      personaNotes: {
+        founder: "Only viable with innovative reimbursement or nontraditional partnerships.",
+        investor: "Impact-focused rather than return-driven.",
+        bigpharma: "Low appetite except for stewardship or policy-driven partnerships.",
+        consulting: "Policy, incentive design and market shaping are common work here."
+      }
     }
-  },
+  ];
 
-  {
-    id: "metabolic_obesity",
-    name: "Metabolic - Obesity and NASH",
-    segment: "Metabolic",
-    modalities: ["small","bio"],
-    tamUSD: 90,
-    cagr: 14.0,
-    trials: 430,
-    competition: 8.5,
-    unmetNeed: 8.0,
-    pricingPower: 7.5,
-    dealActivity: 9.2,
-    investorMomentum: 9.5,
-    recommendation: "watch",
+  // ----------------------------
+  // KPI calculations
+  // ----------------------------
+  function computeKpis(list) {
+    let tam = 0, weightedCagr = 0, weight = 0, highConviction = 0;
 
-    timeToMarket: 5,
-    probSuccess: 0.20,
-    clinicalRisk: 7.5,
-    phaseCost: 7.5,
-    cashNeed: 8.0,
+    list.forEach(a => {
+      tam += a.tamUSD;
+      weightedCagr += a.cagr * a.tamUSD;
+      weight += a.tamUSD;
+      if (["enter","partner"].includes(a.recommendation)) highConviction++;
+    });
 
-    rationaleShort: "Explosive momentum but dominated by incumbents.",
-    personaNotes: {
-      founder: "Target niches, combos, adjacent services.",
-      investor: "Look for enabling tech.",
-      bigpharma: "Focus on lifecycle and combos.",
-      consulting: "Scenario planning + access work."
-    }
-  },
-
-  {
-    id: "antiinfectious",
-    name: "Novel antibiotics and anti-infectives",
-    segment: "Anti infectives",
-    modalities: ["small"],
-    tamUSD: 12,
-    cagr: 5.0,
-    trials: 150,
-    competition: 4.5,
-    unmetNeed: 9.0,
-    pricingPower: 3.5,
-    dealActivity: 4.0,
-    investorMomentum: 3.0,
-    recommendation: "avoid",
-
-    timeToMarket: 8,
-    probSuccess: 0.10,
-    clinicalRisk: 8.0,
-    phaseCost: 5.0,
-    cashNeed: 7.0,
-
-    rationaleShort: "High need but commercial model broken.",
-    personaNotes: {
-      founder: "Only viable with nontraditional reimbursement.",
-      investor: "Impact-focused, not financial.",
-      bigpharma: "Low appetite except stewardship.",
-      consulting: "Policy/incentive work fits."
-    }
+    return {
+      tam,
+      cagr: weightedCagr / Math.max(1, weight),
+      highConviction
+    };
   }
-];
 
-//////////////////////////////////////////////////////////////////
-// KPI CALCULATION
-//////////////////////////////////////////////////////////////////
+  // ----------------------------
+  // Attractiveness score
+  // ----------------------------
+  function computeAttractiveness(a) {
+    const growth = Math.min(a.cagr / 3, 10);
+    const tam = Math.min(a.tamUSD / 12, 10);
+    const competitionPenalty = 10 - a.competition * 0.7;
 
-function computeKpis(list) {
-  let tam = 0, weightedCagr = 0, weight = 0, highConviction = 0;
+    return Math.max(2, Math.min(10,
+      growth*0.2 +
+      tam*0.2 +
+      competitionPenalty*0.15 +
+      a.unmetNeed*0.2 +
+      a.investorMomentum*0.25
+    ));
+  }
 
-  list.forEach(a => {
-    tam += a.tamUSD;
-    weightedCagr += a.cagr * a.tamUSD;
-    weight += a.tamUSD;
-    if (["enter","partner"].includes(a.recommendation)) highConviction++;
-  });
+  // ----------------------------
+  // Feasibility (Equity Research Model)
+  // ----------------------------
+  function computeFeasibility(a) {
+    const success = a.probSuccess * 10;
+    const timeScore = Math.max(0, Math.min(10, 10 - (a.timeToMarket - 3) * 1.3));
+    const risk = 10 - a.clinicalRisk;
+    const cost = 10 - a.phaseCost;
+    const cash = 10 - a.cashNeed;
 
-  return {
-    tam,
-    cagr: weightedCagr / weight,
-    highConviction
-  };
-}
+    return Math.max(1.5, Math.min(9.5,
+      success*0.3 +
+      timeScore*0.2 +
+      risk*0.2 +
+      cost*0.15 +
+      cash*0.15
+    ));
+  }
 
-//////////////////////////////////////////////////////////////////
-// ATTRACTIVENESS SCORE
-//////////////////////////////////////////////////////////////////
+  // ----------------------------
+  // Filter state
+  // ----------------------------
+  let activePlay = "all";
+  let activeModality = "all";
+  let activePersona = "founder";
+  let activeArea = null;
 
-function computeAttractiveness(a) {
-  const growth = Math.min(a.cagr / 3, 10);
-  const tam = Math.min(a.tamUSD / 12, 10);
-  const competitionPenalty = 10 - a.competition * 0.7;
-  return Math.max(2, Math.min(10,
-    growth*0.2 + tam*0.2 + competitionPenalty*0.15 + a.unmetNeed*0.2 + a.investorMomentum*0.25
-  ));
-}
+  function applyFilters() {
+    return areas.filter(a => {
+      if (activePlay !== "all" && a.recommendation !== activePlay) return false;
+      if (activeModality !== "all" && !a.modalities.includes(activeModality)) return false;
+      return true;
+    });
+  }
 
-//////////////////////////////////////////////////////////////////
-// FEASIBILITY — EQUITY RESEARCH MODEL
-//////////////////////////////////////////////////////////////////
+  // ----------------------------
+  // Render KPIs
+  // ----------------------------
+  function renderKpis(list) {
+    const k = computeKpis(list);
 
-function computeFeasibility(a) {
-  const success = a.probSuccess * 10;
-  const timeScore = Math.max(0, Math.min(10, 10 - (a.timeToMarket-3) * 1.3));
-  const risk = 10 - a.clinicalRisk;
-  const cost = 10 - a.phaseCost;
-  const cash = 10 - a.cashNeed;
-
-  return Math.max(1.5, Math.min(9.5,
-    success*0.3 + timeScore*0.2 + risk*0.2 + cost*0.15 + cash*0.15
-  ));
-}
-
-//////////////////////////////////////////////////////////////////
-// FILTER STATE
-//////////////////////////////////////////////////////////////////
-
-let activePlay = "all";
-let activeModality = "all";
-let activePersona = "founder";
-let activeArea = null;
-
-//////////////////////////////////////////////////////////////////
-// RENDER FUNCTIONS
-//////////////////////////////////////////////////////////////////
-
-function applyFilters() {
-  return areas.filter(a => {
-    if (activePlay !== "all" && a.recommendation !== activePlay) return false;
-    if (activeModality !== "all" && !a.modalities.includes(activeModality)) return false;
-    return true;
-  });
-}
-
-function renderKpis(list) {
-  const kpis = computeKpis(list);
-  document.getElementById("kpiGrid").innerHTML = `
-    <div class="kpi-card">
-      <div class="kpi-label">Total addressable market</div>
-      <div class="kpi-value">$${kpis.tam}B+</div>
-      <div class="kpi-sub">Summed across segments</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Weighted TAM growth</div>
-      <div class="kpi-value">${kpis.cagr.toFixed(1)}% CAGR</div>
-      <div class="kpi-sub">Segment weighted</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">High conviction</div>
-      <div class="kpi-value">${kpis.highConviction} areas</div>
-      <div class="kpi-sub">Enter/partner</div>
-    </div>
-  `;
-}
-
-function renderAreaList(list) {
-  const container = document.getElementById("areaList");
-  document.getElementById("resultsSummary").textContent = `${list.length} areas shown`;
-  container.innerHTML = "";
-
-  list.forEach(a => {
-    const attract = computeAttractiveness(a);
-
-    const card = document.createElement("div");
-    card.className = "area-card";
-    if (a.id === activeArea) card.classList.add("active");
-
-    card.innerHTML = `
-      <div>
-        <div class="area-name">${a.name}</div>
-        <div class="area-tags">
-          <span class="chip">${a.segment}</span>
-          <span class="chip chip-${a.recommendation}">
-            ${recommendLabel(a.recommendation)}
-          </span>
-        </div>
+    document.getElementById("kpiGrid").innerHTML = `
+      <div class="kpi-card">
+        <div class="kpi-label">Total addressable market</div>
+        <div class="kpi-value">$${k.tam}B+</div>
+        <div class="kpi-sub">Summed across segments</div>
       </div>
-
-      <div class="area-metrics">
-        TAM ~ $${a.tamUSD}B
-        <br>Growth ~ ${a.cagr}% CAGR
-        <br>Trials ~ ${a.trials}+
+      <div class="kpi-card">
+        <div class="kpi-label">Weighted TAM growth</div>
+        <div class="kpi-value">${k.cagr.toFixed(1)}% CAGR</div>
+        <div class="kpi-sub">Segment weighted</div>
       </div>
-
-      <div class="area-score">
-        <div class="score-value">${attract.toFixed(1)}/10</div>
-        <div class="score-bar"><div class="score-bar-inner" style="width:${attract*10}%"></div></div>
+      <div class="kpi-card">
+        <div class="kpi-label">High conviction</div>
+        <div class="kpi-value">${k.highConviction} areas</div>
+        <div class="kpi-sub">Enter/partner</div>
       </div>
     `;
-
-    card.onclick = () => {
-      activeArea = a.id;
-      renderAll();
-    };
-
-    container.appendChild(card);
-  });
-}
-
-function recommendLabel(r) {
-  if (r === "enter") return "Enter market";
-  if (r === "partner") return "Partner first";
-  if (r === "watch") return "Watch closely";
-  if (r === "avoid") return "Avoid for now";
-}
-
-function renderDetail(area) {
-  if (!area) {
-    document.getElementById("detailPanel").innerHTML = "Select an area.";
-    return;
   }
 
-  const feas = computeFeasibility(area);
+  // ----------------------------
+  // Render list of areas
+  // ----------------------------
+  function renderAreaList(list) {
+    const box = document.getElementById("areaList");
+    document.getElementById("resultsSummary").textContent = `${list.length} areas shown`;
+    box.innerHTML = "";
 
-  document.getElementById("detailPanel").innerHTML = `
-    <div class="detail-title">${area.name}</div>
-    <div class="detail-sub">${area.rationaleShort}</div>
+    list.forEach(a => {
+      const attract = computeAttractiveness(a);
 
-    <div class="badge-row" style="margin-bottom:6px;">
-      <span class="chip">${area.segment}</span>
-      <span class="chip">Modalities: ${area.modalities.join(", ")}</span>
-      <span class="chip chip-${area.recommendation}">
-        ${recommendLabel(area.recommendation)}
-      </span>
-    </div>
+      const card = document.createElement("div");
+      card.className = "area-card";
+      if (a.id === activeArea) card.classList.add("active");
 
-    <div class="detail-label">Market context</div>
-    <div class="detail-body">
-      TAM ~ $${area.tamUSD}B, ${area.cagr}% CAGR.
-      ${area.trials}+ trials; competition ${area.competition}/10.
-    </div>
+      card.innerHTML = `
+        <div>
+          <div class="area-name">${a.name}</div>
+          <div class="area-tags">
+            <span class="chip">${a.segment}</span>
+            <span class="chip chip-${a.recommendation}">${recommendLabel(a.recommendation)}</span>
+          </div>
+        </div>
 
-    <div class="detail-label" style="margin-top:6px;">Strategic angle</div>
-    <div class="detail-body">${area.personaNotes[activePersona]}</div>
+        <div class="area-metrics">
+          TAM ~ $${a.tamUSD}B
+          <br>Growth ~ ${a.cagr}% CAGR
+          <br>Trials ~ ${a.trials}+
+        </div>
 
-    <div class="detail-label" style="margin-top:6px;">
-      Feasibility score (equity lens)
-    </div>
-    <div class="detail-body">${feas.toFixed(1)}/10</div>
+        <div class="area-score">
+          <div class="score-value">${attract.toFixed(1)}/10</div>
+          <div class="score-bar">
+            <div class="score-bar-inner" style="width:${attract * 10}%"></div>
+          </div>
+        </div>
+      `;
 
-    <div class="detail-label" style="margin-top:6px;">Key drivers</div>
-    <div class="mini-chart">
-      ${miniBar("Unmet need", area.unmetNeed)}
-      ${miniBar("Pricing power", area.pricingPower)}
-      ${miniBar("Deal activity", area.dealActivity)}
-      ${miniBar("Investor momentum", area.investorMomentum)}
-    </div>
-  `;
-}
+      card.onclick = () => {
+        activeArea = a.id;
+        renderAll();
+      };
 
-function miniBar(label, value) {
-  return `
-    <div class="mini-bar-row">
-      <div style="width:110px;">${label}</div>
-      <div class="mini-bar-track">
-        <div class="mini-bar-fill" style="width:${value*10}%"></div>
+      box.appendChild(card);
+    });
+  }
+
+  function recommendLabel(r) {
+    if (r === "enter") return "Enter";
+    if (r === "partner") return "Partner";
+    if (r === "watch") return "Watch closely";
+    if (r === "avoid") return "Avoid";
+  }
+
+  // ----------------------------
+  // Detail panel
+  // ----------------------------
+  function renderDetail(area) {
+    if (!area) {
+      document.getElementById("detailPanel").innerHTML =
+        "<div class='detail-sub'>Select a therapeutic area to view details.</div>";
+      return;
+    }
+
+    const feas = computeFeasibility(area);
+
+    document.getElementById("detailPanel").innerHTML = `
+      <div class="detail-title">${area.name}</div>
+      <div class="detail-sub">${area.rationaleShort}</div>
+
+      <div class="badge-row">
+        <span class="chip">${area.segment}</span>
+        <span class="chip">Modalities: ${area.modalities.join(", ")}</span>
+        <span class="chip chip-${area.recommendation}">${recommendLabel(area.recommendation)}</span>
       </div>
-    </div>
-  `;
-}
 
+      <div class="detail-label">Market context</div>
+      <div class="detail-body">
+        TAM ~ $${area.tamUSD}B, ${area.cagr}% CAGR,
+        ${area.trials}+ trials, competition score ${area.competition}/10.
+      </div>
 
-//////////////////////////////////////////////////////////////////
-// QUADRANT
-//////////////////////////////////////////////////////////////////
+      <div class="detail-label">Strategic angle</div>
+      <div class="detail-body">${area.personaNotes[activePersona]}</div>
 
-function renderQuadrant(list) {
-  const box = document.getElementById("quadrantInner");
-  box.innerHTML = "";
+      <div class="detail-label">Feasibility score (equity lens)</div>
+      <div class="detail-body">${feas.toFixed(1)}/10</div>
 
-  list.forEach(a => {
-    const attract = computeAttractiveness(a);
-    const feas = computeFeasibility(a);
+      <div class="detail-label">Key drivers</div>
+      <div class="mini-chart">
+        ${miniBar("Unmet need", area.unmetNeed)}
+        ${miniBar("Pricing power", area.pricingPower)}
+        ${miniBar("Deal activity", area.dealActivity)}
+        ${miniBar("Investor momentum", area.investorMomentum)}
+      </div>
+    `;
+  }
 
-    const dot = document.createElement("div");
-    dot.className = `quadrant-point quad-${a.recommendation}`;
-    dot.style.left = `${(feas/10)*100}%`;
-    dot.style.top = `${100 - (attract/10)*100}%`;
+  function miniBar(label, value) {
+    return `
+      <div class="mini-bar-row">
+        <div class="mini-bar-label">${label}</div>
+        <div class="mini-bar-track">
+          <div class="mini-bar-fill" style="width:${value * 10}%"></div>
+        </div>
+        <div style="width:42px; font-size:12px; text-align:right; color:#4b5563;">
+          ${value.toFixed(1)}
+        </div>
+      </div>
+    `;
+  }
 
-    dot.title = `${a.name}
-Attractiveness: ${attract.toFixed(1)}
-Feasibility: ${feas.toFixed(1)}`;
+  // ----------------------------
+  // Quadrant
+  // ----------------------------
+  function renderQuadrant(list) {
+    const box = document.getElementById("quadrantInner");
+    box.innerHTML = "";
 
-    dot.onclick = () => {
-      activeArea = a.id;
-      renderAll();
-    };
+    list.forEach(a => {
+      const attract = computeAttractiveness(a);
+      const feas = computeFeasibility(a);
 
-    box.appendChild(dot);
-  });
-}
+      const dot = document.createElement("div");
+      dot.className = `quadrant-point quad-${a.recommendation}`;
+      dot.style.left = `${(feas / 10) * 100}%`;
+      dot.style.top = `${100 - (attract / 10) * 100}%`;
 
-//////////////////////////////////////////////////////////////////
-// RISK CHART
-//////////////////////////////////////////////////////////////////
+      dot.title = `${a.name}\nAttractiveness: ${attract.toFixed(1)}\nFeasibility: ${feas.toFixed(1)}`;
 
-function renderRiskChart(list) {
-  const c = document.getElementById("riskChart");
-  c.innerHTML = "";
+      dot.onclick = () => {
+        activeArea = a.id;
+        renderAll();
+      };
 
-  const avgSuccess = list.reduce((s,a)=>s+a.probSuccess,0)/list.length;
-  const avgTime = list.reduce((s,a)=>s+a.timeToMarket,0)/list.length;
-  const avgRisk = list.reduce((s,a)=>s+a.clinicalRisk,0)/list.length;
+      box.appendChild(dot);
+    });
+  }
 
-  c.innerHTML = `
-    ${miniBar("Probability of success", avgSuccess*10)}
-    ${miniBar("Time to market", 10-avgTime)}
-    ${miniBar("Clinical risk", 10-avgRisk)}
-  `;
-}
+  // ----------------------------
+  // Risk chart
+  // ----------------------------
+  function renderRiskChart(list) {
+    const c = document.getElementById("riskChart");
+    c.innerHTML = "";
 
-//////////////////////////////////////////////////////////////////
-// FILTER HANDLERS
-//////////////////////////////////////////////////////////////////
+    if (!list.length) {
+      c.textContent = "No areas selected.";
+      return;
+    }
 
-document.getElementById("playFilterRow").onclick = e => {
-  if (e.target.tagName !== "BUTTON") return;
-  document.querySelectorAll("#playFilterRow button").forEach(b => b.classList.remove("active"));
-  e.target.classList.add("active");
-  activePlay = e.target.dataset.play;
+    const avgProb = list.reduce((s, a) => s + a.probSuccess, 0) / list.length;
+    const avgTime = list.reduce((s, a) => s + a.timeToMarket, 0) / list.length;
+    const avgRisk = list.reduce((s, a) => s + a.clinicalRisk, 0) / list.length;
+
+    const rows = [
+      {
+        label: "Avg probability of success",
+        value: avgProb * 100,
+        max: 100,
+        display: avgProb * 100,
+        unit: "%"
+      },
+      {
+        label: "Avg time to market",
+        value: avgTime,
+        max: 10,
+        display: avgTime,
+        unit: "yrs"
+      },
+      {
+        label: "Avg clinical risk",
+        value: avgRisk,
+        max: 10,
+        display: avgRisk,
+        unit: "/10"
+      }
+    ];
+
+    rows.forEach(r => {
+      const row = document.createElement("div");
+      row.className = "mini-bar-row";
+
+      const label = document.createElement("div");
+      label.className = "mini-bar-label";
+      label.textContent = r.label;
+
+      const track = document.createElement("div");
+      track.className = "mini-bar-track";
+
+      const fill = document.createElement("div");
+      fill.className = "mini-bar-fill";
+      fill.style.width = Math.max(8, Math.min(100, (r.value / r.max) * 100)) + "%";
+      track.appendChild(fill);
+
+      const val = document.createElement("div");
+      val.style.width = "50px";
+      val.style.textAlign = "right";
+      val.style.fontSize = "12px";
+      val.style.color = "#4b5563";
+      val.textContent =
+        r.unit === "%"
+          ? r.display.toFixed(0) + "%"
+          : r.display.toFixed(1) + " " + r.unit;
+
+      row.appendChild(label);
+      row.appendChild(track);
+      row.appendChild(val);
+
+      c.appendChild(row);
+    });
+  }
+
+  // ----------------------------
+  // Event handlers
+  // ----------------------------
+  document.getElementById("playFilterRow").onclick = e => {
+    if (e.target.tagName !== "BUTTON") return;
+    document.querySelectorAll("#playFilterRow button").forEach(b => b.classList.remove("active"));
+    e.target.classList.add("active");
+    activePlay = e.target.dataset.play;
+    renderAll();
+  };
+
+  document.getElementById("modalityFilterRow").onclick = e => {
+    if (e.target.tagName !== "BUTTON") return;
+    document.querySelectorAll("#modalityFilterRow button").forEach(b => b.classList.remove("active"));
+    e.target.classList.add("active");
+    activeModality = e.target.dataset.modality;
+    renderAll();
+  };
+
+  document.getElementById("personaSelect").onchange = e => {
+    activePersona = e.target.value;
+    renderAll();
+  };
+
+  // ----------------------------
+  // Render everything
+  // ----------------------------
+  function renderAll() {
+    const filtered = applyFilters();
+    renderKpis(filtered);
+    renderAreaList(filtered);
+    renderDetail(areas.find(a => a.id === activeArea));
+    renderQuadrant(filtered);
+    renderRiskChart(filtered);
+  }
+
   renderAll();
-};
-
-document.getElementById("modalityFilterRow").onclick = e => {
-  if (e.target.tagName !== "BUTTON") return;
-  document.querySelectorAll("#modalityFilterRow button").forEach(b => b.classList.remove("active"));
-  e.target.classList.add("active");
-  activeModality = e.target.dataset.modality;
-  renderAll();
-};
-
-document.getElementById("personaSelect").onchange = e => {
-  activePersona = e.target.value;
-  renderAll();
-};
-
-//////////////////////////////////////////////////////////////////
-// MAIN RENDER
-//////////////////////////////////////////////////////////////////
-
-function renderAll() {
-  const filtered = applyFilters();
-  renderKpis(filtered);
-  renderAreaList(filtered);
-  renderDetail(areas.find(a => a.id === activeArea));
-  renderQuadrant(filtered);
-  renderRiskChart(filtered);
-}
-
-renderAll();
-
 </script>
 
 </body>
 </html>
-
 
