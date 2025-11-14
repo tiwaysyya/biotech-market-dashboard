@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Biotech Market Landscape Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --bg-light: #fdf6ec;
+      --bg-soft: #f3e3d3;
+      --card: #f6eadf;
+      --accent: #d9b28c;
+      --accent-strong: #c08b5a;
+      --accent-soft: #f5cfa5;
+      --text-main: #3e3028;
+      --text-soft: #7a6453;
+      --border-soft: #e2cbb6;
+      --bad: #c8544b;
+      --good: #3c8f5a;
+      --watch: #b78a2f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, var(--bg-light), var(--bg-soft));
+      color: var(--text-main);
+      padding: 24px 16px 40px;
+    }
+
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0;
+      text-align: center;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 24px;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-soft);
+      margin-top: 6px;
+      margin-bottom: 18px;
+    }
+
+    .frame {
+      background: rgba(255, 252, 247, 0.95);
+      border-radius: 18px;
+      padding: 18px 18px 22px;
+      border: 1px solid rgba(230, 205, 181, 0.9);
+      box-shadow: 0 10px 30px rgba(148, 99, 74, 0.12);
+      backdrop-filter: blur(4px);
+    }
+
+    .top-row {
+      display: grid;
+      grid-template-columns: 2.1fr 1.3fr;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .top-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .section-title {
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      margin-bottom: 10px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    @media (max-width: 700px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .kpi-card {
+      border-radius: 14px;
+      border: 1px solid var(--border-soft);
+      background: rgba(249, 237, 226, 0.9);
+      padding: 10px 12px;
+      box-shadow: 0 4px 12px rgba(148, 99, 74, 0.08);
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-soft);
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .kpi-sub {
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    .filters {
+      border-radius: 14px;
+      border: 1px solid var(--border-soft);
+      background: rgba(249, 237, 226, 0.9);
+      padding: 10px 12px;
+      box-shadow: 0 4px 12px rgba(148, 99, 74, 0.08);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .filters-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-soft);
+      margin-bottom: 3px;
+    }
+
+    .select,
+    .pill-row button {
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: #fdf3e7;
+      padding: 7px 10px;
+      font-size: 13px;
+      color: var(--text-main);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .select {
+      width: 100%;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .pill-row button {
+      flex: 1;
+      min-width: 70px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .pill-row button.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      color: #fffaf5;
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba(148, 99, 74, 0.5);
+    }
+
+    .filters-note {
+      font-size: 11px;
+      color: var(--text-soft);
+      margin-top: 2px;
+    }
+
+    .layout-main {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1.7fr 1.3fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .layout-main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      border-radius: 16px;
+      border: 1px solid var(--border-soft);
+      background: rgba(249, 237, 226, 0.9);
+      padding: 10px 12px 12px;
+      box-shadow: 0 4px 12px rgba(148, 99, 74, 0.08);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .panel-title {
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+    }
+
+    .panel-subtitle {
+      font-size: 11px;
+      color: var(--text-soft);
+      text-align: right;
+    }
+
+    .area-list {
+      max-height: 360px;
+      overflow-y: auto;
+      padding-right: 4px;
+      margin-top: 4px;
+    }
+
+    .area-card {
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: rgba(255, 252, 247, 0.95);
+      padding: 8px 9px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      transition: border-color 0.12s ease, box-shadow 0.12s ease, transform 0.08s ease, background 0.12s ease;
+      display: grid;
+      grid-template-columns: 1.5fr 1.2fr 1fr;
+      gap: 6px;
+      align-items: center;
+    }
+
+    @media (max-width: 700px) {
+      .area-card {
+        grid-template-columns: 1.7fr 1.2fr;
+      }
+    }
+
+    .area-card:hover {
+      border-color: var(--accent-soft);
+      box-shadow: 0 3px 10px rgba(148, 99, 74, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .area-card.active {
+      border-color: var(--accent-strong);
+      box-shadow: 0 4px 14px rgba(148, 99, 74, 0.3);
+      background: #fbe3c8;
+    }
+
+    .area-name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .area-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      font-size: 11px;
+    }
+
+    .chip {
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: rgba(249, 237, 226, 0.9);
+      white-space: nowrap;
+    }
+
+    .chip-small {
+      font-size: 10px;
+      padding: 2px 6px;
+    }
+
+    .chip-good {
+      border-color: rgba(62, 129, 84, 0.7);
+      color: var(--good);
+    }
+
+    .chip-bad {
+      border-color: rgba(200, 84, 75, 0.7);
+      color: var(--bad);
+    }
+
+    .chip-watch {
+      border-color: rgba(183, 138, 47, 0.7);
+      color: var(--watch);
+    }
+
+    .chip-enter {
+      border-color: rgba(60, 143, 90, 0.7);
+      color: var(--good);
+      background: rgba(97, 173, 122, 0.1);
+    }
+
+    .chip-partner {
+      border-color: rgba(192, 139, 90, 0.8);
+      color: var(--accent-strong);
+      background: rgba(192, 139, 90, 0.12);
+    }
+
+    .area-metrics {
+      font-size: 12px;
+      color: var(--text-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .area-score {
+      text-align: right;
+      font-size: 12px;
+    }
+
+    .score-label {
+      font-size: 11px;
+      color: var(--text-soft);
+      margin-bottom: 1px;
+    }
+
+    .score-value {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .score-bar {
+      margin-top: 4px;
+      width: 100%;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(233, 209, 185, 0.8);
+      overflow: hidden;
+    }
+
+    .score-bar-inner {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent-soft), var(--accent-strong));
+      width: 0%;
+    }
+
+    .detail-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .detail-sub {
+      font-size: 12px;
+      color: var(--text-soft);
+      margin-bottom: 8px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1.2fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 700px) {
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .detail-block {
+      font-size: 12px;
+    }
+
+    .detail-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-soft);
+      margin-bottom: 3px;
+    }
+
+    .detail-body {
+      font-size: 12px;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .mini-chart {
+      margin-top: 6px;
+    }
+
+    .mini-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      margin-bottom: 3px;
+    }
+
+    .mini-bar-label {
+      width: 80px;
+      color: var(--text-soft);
+    }
+
+    .mini-bar-track {
+      flex: 1;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(233, 209, 185, 0.8);
+      overflow: hidden;
+    }
+
+    .mini-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent-soft), var(--accent-strong));
+      width: 0%;
+    }
+
+    .insights-list {
+      font-size: 12px;
+      padding-left: 16px;
+      margin: 0;
+    }
+
+    .insights-list li {
+      margin-bottom: 4px;
+    }
+
+    .footer-note {
+      margin-top: 14px;
+      font-size: 11px;
+      color: var(--text-soft);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>Biotech Market Landscape</h1>
+      <div class="subtitle">
+        High level view of therapeutic opportunities across oncology, rare disease and advanced modalities
+      </div>
+    </header>
+
+    <div class="frame">
+      <div class="top-row">
+        <section>
+          <div class="section-title">Market snapshot</div>
+          <div class="kpi-grid" id="kpiGrid">
+            <!-- KPI cards injected by JS -->
+          </div>
+        </section>
+
+        <aside class="filters">
+          <div>
+            <div class="section-title">Strategy lens</div>
+            <div class="filters-row">
+              <div class="label">Persona</div>
+              <select id="personaSelect" class="select">
+                <option value="founder">Biotech founder</option>
+                <option value="investor">Life sciences investor</option>
+                <option value="bigpharma">Big pharma BD</option>
+                <option value="consulting">Strategy consulting</option>
+              </select>
+            </div>
+
+            <div class="filters-row">
+              <div class="label">Recommended play</div>
+              <div class="pill-row" id="playFilterRow">
+                <button data-play="all" class="active">All areas</button>
+                <button data-play="enter">Enter</button>
+                <button data-play="partner">Partner</button>
+                <button data-play="watch">Watch</button>
+                <button data-play="avoid">Avoid</button>
+              </div>
+            </div>
+
+            <div class="filters-row">
+              <div class="label">Modality focus</div>
+              <div class="pill-row" id="modalityFilterRow">
+                <button data-modality="all" class="active">All</button>
+                <button data-modality="small">Small molecule</button>
+                <button data-modality="bio">Biologics</button>
+                <button data-modality="cellgene">Cell and gene</button>
+                <button data-modality="rna">RNA</button>
+              </div>
+            </div>
+          </div>
+          <div class="filters-note">
+            Filters change which areas are surfaced and how the attractiveness scores are interpreted.
+          </div>
+        </aside>
+      </div>
+
+      <div class="layout-main">
+        <section class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Therapeutic area heatmap</div>
+            <div class="panel-subtitle" id="resultsSummary">
+              <!-- filled by JS -->
+            </div>
+          </div>
+          <div class="area-list" id="areaList">
+            <!-- cards injected by JS -->
+          </div>
+        </section>
+
+        <aside class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Area detail view</div>
+          </div>
+          <div id="detailPanel">
+            <div class="detail-title">Select an area</div>
+            <div class="detail-sub">
+              Click on any therapeutic area in the heatmap to see market context, competitive intensity and a recommended strategic move.
+            </div>
+            <ul class="insights-list">
+              <li>Use this as a starting point for market scanning or client discovery.</li>
+              <li>Overlay your own pipeline, capabilities and regional focus.</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+
+      <div class="footer-note">
+        All figures are directional and simplified to support discussion, not investment decisions.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Simple mock data so the dashboard feels realistic
+    const areas = [
+      {
+        id: "onco_io",
+        name: "Oncology - Immuno-oncology",
+        segment: "Oncology",
+        modalities: ["bio", "cellgene"],
+        tamUSD: 85, // billions
+        cagr: 11.5,
+        trials: 1450,
+        competition: 9.2,
+        unmetNeed: 8.5,
+        pricingPower: 8.0,
+        dealActivity: 9.0,
+        investorMomentum: 8.8,
+        recommendation: "partner", // enter | partner | watch | avoid
+        rationaleShort: "Crowded but still high value for differentiated mechanisms and smart combinations.",
+        personaNotes: {
+          founder: "Differentiation is everything here. Strong biomarkers, niche indications and combo rationale are essential.",
+          investor: "Focus on assets with clear stratification, fast to proof of concept and de-risked regulatory endpoints.",
+          bigpharma: "Partner for late stage assets that plug into your existing oncology sales footprint.",
+          consulting: "High demand for portfolio pruning, indication selection and BD screening work."
+        }
+      },
+      {
+        id: "rare_metabolic",
+        name: "Rare metabolic disease",
+        segment: "Rare disease",
+        modalities: ["bio", "cellgene"],
+        tamUSD: 22,
+        cagr: 13.0,
+        trials: 320,
+        competition: 4.0,
+        unmetNeed: 9.4,
+        pricingPower: 9.2,
+        dealActivity: 7.5,
+        investorMomentum: 7.8,
+        recommendation: "enter",
+        rationaleShort: "High unmet need and payer tolerance for premium pricing, with manageable competition.",
+        personaNotes: {
+          founder: "Attractive if you can secure strong natural history data and credible KOL backing.",
+          investor: "Look for platforms that can spin multiple assets across a shared biology backbone.",
+          bigpharma: "Consider bolt on acquisitions to diversify revenue and improve pricing resilience.",
+          consulting: "Classic positioning for launch strategy, HEOR and access modelling."
+        }
+      },
+      {
+        id: "autoimmune_bio",
+        name: "Autoimmune - Biologic therapies",
+        segment: "Autoimmune",
+        modalities: ["bio"],
+        tamUSD: 70,
+        cagr: 8.0,
+        trials: 760,
+        competition: 8.7,
+        unmetNeed: 7.0,
+        pricingPower: 7.3,
+        dealActivity: 7.8,
+        investorMomentum: 7.0,
+        recommendation: "partner",
+        rationaleShort: "Significant established markets with biosimilar pressure and room for best in class plays.",
+        personaNotes: {
+          founder: "Differentiation on convenience, safety profile and payer friendliness matters more than novel biology.",
+          investor: "Check for real world evidence and switching dynamics, not just trial data.",
+          bigpharma: "Partnerships can refresh ageing franchises and protect share in key indications.",
+          consulting: "Ongoing need for segmentation, brand strategy and access optimisation."
+        }
+      },
+      {
+        id: "cell_therapy_heme",
+        name: "Cell therapy - Haematologic cancers",
+        segment: "Cell and gene therapy",
+        modalities: ["cellgene"],
+        tamUSD: 18,
+        cagr: 23.0,
+        trials: 410,
+        competition: 7.0,
+        unmetNeed: 8.0,
+        pricingPower: 8.5,
+        dealActivity: 8.7,
+        investorMomentum: 8.2,
+        recommendation: "partner",
+        rationaleShort: "Technical and operational complexity favours platforms and partnerships.",
+        personaNotes: {
+          founder: "Manufacturing, COGS and centre of excellence adoption are as important as the science.",
+          investor: "Platform scalability and partnering appetite often matter more than a single asset.",
+          bigpharma: "Partnership slots for co development and regional rights are still attractive.",
+          consulting: "Plenty of work around network design, capacity planning and launch sequencing."
+        }
+      },
+      {
+        id: "rna_rare",
+        name: "RNA therapeutics - Rare and niche indications",
+        segment: "RNA therapeutics",
+        modalities: ["rna"],
+        tamUSD: 15,
+        cagr: 20.0,
+        trials: 180,
+        competition: 5.0,
+        unmetNeed: 8.7,
+        pricingPower: 8.2,
+        dealActivity: 8.3,
+        investorMomentum: 8.9,
+        recommendation: "enter",
+        rationaleShort: "Emerging modality with strong momentum and clear value in genetically defined populations.",
+        personaNotes: {
+          founder: "Sharpen your story on delivery, durability and manufacturability.",
+          investor: "Pay attention to platform breadth and potential for repeatable indication expansion.",
+          bigpharma: "Partnerships can de risk modality exposure while gaining optionality.",
+          consulting: "Good playground for indication prioritisation, partner search and market entry cases."
+        }
+      },
+      {
+        id: "neuro_deg",
+        name: "Neurodegeneration",
+        segment: "Neurology",
+        modalities: ["small", "bio"],
+        tamUSD: 55,
+        cagr: 9.5,
+        trials: 520,
+        competition: 7.2,
+        unmetNeed: 9.5,
+        pricingPower: 7.8,
+        dealActivity: 7.0,
+        investorMomentum: 6.5,
+        recommendation: "watch",
+        rationaleShort: "Huge burden and recent wins, but biology is still complex and risk remains high.",
+        personaNotes: {
+          founder: "Risk profile is high. Clear biomarkers and stratification are non negotiable.",
+          investor: "Evidence quality and trial design matter more than headline indication.",
+          bigpharma: "Selectively enter with fast follower or de risked late stage assets.",
+          consulting: "High demand for market shaping, patient journey and access strategy."
+        }
+      },
+      {
+        id: "metabolic_obesity",
+        name: "Metabolic - Obesity and NASH",
+        segment: "Metabolic",
+        modalities: ["small", "bio"],
+        tamUSD: 90,
+        cagr: 14.0,
+        trials: 430,
+        competition: 8.5,
+        unmetNeed: 8.0,
+        pricingPower: 7.5,
+        dealActivity: 9.2,
+        investorMomentum: 9.5,
+        recommendation: "watch",
+        rationaleShort: "Explosive growth and deal activity, but space is consolidating around a few heavyweights.",
+        personaNotes: {
+          founder: "Position yourself in niches, combos or adjacent services rather than core GLP1 competition.",
+          investor: "Watch for enabling technologies, services and adjacent plays rather than me too assets.",
+          bigpharma: "Focus on lifecycle management, combos and geographic expansion.",
+          consulting: "Rich territory for market modelling, scenario analysis and access work."
+        }
+      },
+      {
+        id: "antiinfectious",
+        name: "Novel antibiotics and anti infectives",
+        segment: "Anti infectives",
+        modalities: ["small"],
+        tamUSD: 12,
+        cagr: 5.0,
+        trials: 150,
+        competition: 4.5,
+        unmetNeed: 9.0,
+        pricingPower: 3.5,
+        dealActivity: 4.0,
+        investorMomentum: 3.0,
+        recommendation: "avoid",
+        rationaleShort: "Scientific need is high, but commercial models and incentives remain challenging.",
+        personaNotes: {
+          founder: "Only attractive if you have a clear path to non traditional reimbursement or pull incentives.",
+          investor: "Treat as impact focused or policy linked rather than purely financial.",
+          bigpharma: "Limited appetite outside of targeted access or stewardship initiatives.",
+          consulting: "Interesting from a policy and incentive design angle rather than core growth."
+        }
+      }
+    ];
+
+    const kpiConfig = [
+      {
+        id: "tam",
+        label: "Total addressable market",
+        formatter: value => "$" + value.toFixed(0) + "B+",
+        sub: "Summed across profiled segments"
+      },
+      {
+        id: "cagr",
+        label: "Weighted TAM growth",
+        formatter: value => value.toFixed(1) + "% CAGR",
+        sub: "Based on approximate segment weighting"
+      },
+      {
+        id: "opportunity",
+        label: "High conviction plays",
+        formatter: value => value + " areas",
+        sub: "Recommended as enter or partner"
+      }
+    ];
+
+    let activePlayFilter = "all";
+    let activeModalityFilter = "all";
+    let activePersona = "founder";
+    let activeAreaId = null;
+
+    function computeKpis(filtered) {
+      const list = filtered.length ? filtered : areas;
+      let totalTam = 0;
+      let weightedCagr = 0;
+      let totalWeight = 0;
+      let highConviction = 0;
+
+      list.forEach(a => {
+        totalTam += a.tamUSD;
+        const weight = a.tamUSD;
+        weightedCagr += a.cagr * weight;
+        totalWeight += weight;
+        if (a.recommendation === "enter" || a.recommendation === "partner") {
+          highConviction += 1;
+        }
+      });
+
+      const cagr = totalWeight ? weightedCagr / totalWeight : 0;
+
+      return {
+        tam: totalTam,
+        cagr,
+        opportunity: highConviction
+      };
+    }
+
+    function formatRecommendation(rec) {
+      switch (rec) {
+        case "enter": return "Enter market";
+        case "partner": return "Partner first";
+        case "watch": return "Watch closely";
+        case "avoid": return "Avoid for now";
+        default: return rec;
+      }
+    }
+
+    function applyFilters() {
+      return areas.filter(a => {
+        if (activePlayFilter !== "all" && a.recommendation !== activePlayFilter) {
+          return false;
+        }
+        if (activeModalityFilter !== "all" && !a.modalities.includes(activeModalityFilter)) {
+          return false;
+        }
+        return true;
+      });
+    }
+
+    function renderKpis(filtered) {
+      const kpiGrid = document.getElementById("kpiGrid");
+      kpiGrid.innerHTML = "";
+      const kpis = computeKpis(filtered);
+
+      kpiConfig.forEach(cfg => {
+        const card = document.createElement("div");
+        card.className = "kpi-card";
+
+        const label = document.createElement("div");
+        label.className = "kpi-label";
+        label.textContent = cfg.label;
+
+        const value = document.createElement("div");
+        value.className = "kpi-value";
+        value.textContent = cfg.formatter(kpis[cfg.id]);
+
+        const sub = document.createElement("div");
+        sub.className = "kpi-sub";
+        sub.textContent = cfg.sub;
+
+        card.appendChild(label);
+        card.appendChild(value);
+        card.appendChild(sub);
+
+        kpiGrid.appendChild(card);
+      });
+    }
+
+    function renderAreas() {
+      const filtered = applyFilters();
+      const listEl = document.getElementById("areaList");
+      listEl.innerHTML = "";
+
+      const summary = document.getElementById("resultsSummary");
+      summary.textContent = filtered.length + " areas shown";
+
+      filtered.forEach(a => {
+        const card = document.createElement("div");
+        card.className = "area-card";
+        card.dataset.id = a.id;
+        if (a.id === activeAreaId) {
+          card.classList.add("active");
+        }
+
+        const left = document.createElement("div");
+        const name = document.createElement("div");
+        name.className = "area-name";
+        name.textContent = a.name;
+        const tags = document.createElement("div");
+        tags.className = "area-tags";
+
+        const segChip = document.createElement("span");
+        segChip.className = "chip chip-small";
+        segChip.textContent = a.segment;
+
+        const recChip = document.createElement("span");
+        recChip.className = "chip chip-small";
+        if (a.recommendation === "enter") {
+          recChip.classList.add("chip-enter");
+        } else if (a.recommendation === "partner") {
+          recChip.classList.add("chip-partner");
+        } else if (a.recommendation === "watch") {
+          recChip.classList.add("chip-watch");
+        } else if (a.recommendation === "avoid") {
+          recChip.classList.add("chip-bad");
+        }
+        recChip.textContent = formatRecommendation(a.recommendation);
+
+        tags.appendChild(segChip);
+        tags.appendChild(recChip);
+        left.appendChild(name);
+        left.appendChild(tags);
+
+        const mid = document.createElement("div");
+        mid.className = "area-metrics";
+        mid.innerHTML =
+          "TAM ~ $" + a.tamUSD.toFixed(0) + "B<br>" +
+          "Growth ~ " + a.cagr.toFixed(1) + "% CAGR<br>" +
+          "Trials ~ " + a.trials + "+";
+
+        const right = document.createElement("div");
+        right.className = "area-score";
+
+        const scoreLabel = document.createElement("div");
+        scoreLabel.className = "score-label";
+        scoreLabel.textContent = "Attractiveness";
+
+        const scoreValue = document.createElement("div");
+        scoreValue.className = "score-value";
+        const scoreRaw = computeAttractiveness(a);
+        scoreValue.textContent = scoreRaw.toFixed(1) + "/10";
+
+        const bar = document.createElement("div");
+        bar.className = "score-bar";
+        const barInner = document.createElement("div");
+        barInner.className = "score-bar-inner";
+        barInner.style.width = (scoreRaw * 10) + "%";
+        bar.appendChild(barInner);
+
+        right.appendChild(scoreLabel);
+        right.appendChild(scoreValue);
+        right.appendChild(bar);
+
+        card.appendChild(left);
+        card.appendChild(mid);
+        card.appendChild(right);
+
+        card.addEventListener("click", () => {
+          activeAreaId = a.id;
+          renderAreas();
+          renderDetail(a);
+        });
+
+        listEl.appendChild(card);
+      });
+
+      // If no active area but we have results, select first
+      if (!activeAreaId && filtered.length > 0) {
+        activeAreaId = filtered[0].id;
+        renderAreas();
+        renderDetail(filtered[0]);
+      }
+
+      renderKpis(filtered);
+    }
+
+    function computeAttractiveness(area) {
+      // Very simple weighted blend of scores, tuned to feel "consultanty"
+      const growthScore = Math.min(area.cagr / 3, 10); // normalise growth
+      const tamScore = Math.min(area.tamUSD / 12, 10); // bigger markets score higher
+      const competitionPenalty = 10 - area.competition * 0.7;
+      const unmetScore = area.unmetNeed;
+      const momentumScore = area.investorMomentum;
+
+      const raw =
+        growthScore * 0.2 +
+        tamScore * 0.2 +
+        competitionPenalty * 0.15 +
+        unmetScore * 0.2 +
+        momentumScore * 0.25;
+
+      return Math.max(2, Math.min(9.8, raw));
+    }
+
+    function renderDetail(area) {
+      const panel = document.getElementById("detailPanel");
+      panel.innerHTML = "";
+
+      const title = document.createElement("div");
+      title.className = "detail-title";
+      title.textContent = area.name;
+
+      const sub = document.createElement("div");
+      sub.className = "detail-sub";
+      sub.textContent = area.rationaleShort;
+
+      const badges = document.createElement("div");
+      badges.className = "badge-row";
+
+      const segChip = document.createElement("span");
+      segChip.className = "chip chip-small";
+      segChip.textContent = area.segment;
+
+      const modalitiesChip = document.createElement("span");
+      modalitiesChip.className = "chip chip-small";
+      modalitiesChip.textContent = "Modalities: " + area.modalities.map(m => {
+        if (m === "small") return "Small molecule";
+        if (m === "bio") return "Biologics";
+        if (m === "cellgene") return "Cell and gene";
+        if (m === "rna") return "RNA";
+        return m;
+      }).join(", ");
+
+      const recChip = document.createElement("span");
+      recChip.className = "chip chip-small";
+      if (area.recommendation === "enter") {
+        recChip.classList.add("chip-enter");
+      } else if (area.recommendation === "partner") {
+        recChip.classList.add("chip-partner");
+      } else if (area.recommendation === "watch") {
+        recChip.classList.add("chip-watch");
+      } else if (area.recommendation === "avoid") {
+        recChip.classList.add("chip-bad");
+      }
+      recChip.textContent = formatRecommendation(area.recommendation);
+
+      badges.appendChild(segChip);
+      badges.appendChild(modalitiesChip);
+      badges.appendChild(recChip);
+
+      const detailGrid = document.createElement("div");
+      detailGrid.className = "detail-grid";
+
+      const block1 = document.createElement("div");
+      block1.className = "detail-block";
+      const label1 = document.createElement("div");
+      label1.className = "detail-label";
+      label1.textContent = "Market context";
+      const body1 = document.createElement("div");
+      body1.className = "detail-body";
+      body1.innerHTML =
+        "Approx TAM: $" + area.tamUSD.toFixed(0) + "B, growing at ~" + area.cagr.toFixed(1) + "% per year. " +
+        "There are an estimated " + area.trials + "+ active trials, with competition intensity scoring " +
+        area.competition.toFixed(1) + "/10.";
+
+      block1.appendChild(label1);
+      block1.appendChild(body1);
+
+      const block2 = document.createElement("div");
+      block2.className = "detail-block";
+      const label2 = document.createElement("div");
+      label2.className = "detail-label";
+      label2.textContent = "Strategic angle";
+      const body2 = document.createElement("div");
+      body2.className = "detail-body";
+      const personaNote = area.personaNotes[activePersona] || "";
+      body2.textContent = personaNote;
+
+      block2.appendChild(label2);
+      block2.appendChild(body2);
+
+      detailGrid.appendChild(block1);
+      detailGrid.appendChild(block2);
+
+      const miniChart = document.createElement("div");
+      miniChart.className = "mini-chart";
+
+      const metrics = [
+        { label: "Unmet need", value: area.unmetNeed },
+        { label: "Pricing power", value: area.pricingPower },
+        { label: "Deal activity", value: area.dealActivity },
+        { label: "Investor momentum", value: area.investorMomentum }
+      ];
+
+      metrics.forEach(m => {
+        const row = document.createElement("div");
+        row.className = "mini-bar-row";
+
+        const lab = document.createElement("div");
+        lab.className = "mini-bar-label";
+        lab.textContent = m.label;
+
+        const track = document.createElement("div");
+        track.className = "mini-bar-track";
+
+        const fill = document.createElement("div");
+        fill.className = "mini-bar-fill";
+        fill.style.width = (m.value * 10) + "%";
+
+        track.appendChild(fill);
+        row.appendChild(lab);
+        row.appendChild(track);
+
+        miniChart.appendChild(row);
+      });
+
+      const insightsLabel = document.createElement("div");
+      insightsLabel.className = "detail-label";
+      insightsLabel.style.marginTop = "8px";
+      insightsLabel.textContent = "How to use this";
+
+      const insightsList = document.createElement("ul");
+      insightsList.className = "insights-list";
+      const li1 = document.createElement("li");
+      li1.textContent = "Use as a starting hypothesis for pipeline or BD scans, not as a final answer.";
+      const li2 = document.createElement("li");
+      li2.textContent = "Layer on company specific capabilities, regional focus and risk appetite.";
+      const li3 = document.createElement("li");
+      li3.textContent = "Refine with deeper market sizing and competitive intelligence where needed.";
+
+      insightsList.appendChild(li1);
+      insightsList.appendChild(li2);
+      insightsList.appendChild(li3);
+
+      panel.appendChild(title);
+      panel.appendChild(sub);
+      panel.appendChild(badges);
+      panel.appendChild(detailGrid);
+      panel.appendChild(miniChart);
+      panel.appendChild(insightsLabel);
+      panel.appendChild(insightsList);
+    }
+
+    function attachFilterHandlers() {
+      const playRow = document.getElementById("playFilterRow");
+      playRow.querySelectorAll("button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          playRow.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          activePlayFilter = btn.dataset.play;
+          activeAreaId = null;
+          renderAreas();
+        });
+      });
+
+      const modalityRow = document.getElementById("modalityFilterRow");
+      modalityRow.querySelectorAll("button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          modalityRow.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          activeModalityFilter = btn.dataset.modality;
+          activeAreaId = null;
+          renderAreas();
+        });
+      });
+
+      const personaSelect = document.getElementById("personaSelect");
+      personaSelect.addEventListener("change", () => {
+        activePersona = personaSelect.value;
+        if (activeAreaId) {
+          const current = areas.find(a => a.id === activeAreaId);
+          if (current) {
+            renderDetail(current);
+          }
+        }
+      });
+    }
+
+    function init() {
+      attachFilterHandlers();
+      renderKpis(areas);
+      renderAreas();
+    }
+
+    init();
+  </script>
+</body>
+</html>
