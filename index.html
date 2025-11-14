@@ -165,7 +165,6 @@
       width: 100%;
     }
 
-    /* GENERAL BUTTON STYLE */
     button {
       padding: 7px 12px;
       cursor: pointer;
@@ -194,14 +193,13 @@
       gap: 8px;
     }
 
-    /* PILL BUTTONS (filters) */
     .pill-row button {
       display: inline-block;
-      flex: 0 0 auto !important;   /* stop stretching */
+      flex: 0 0 auto !important;
       padding: 7px 14px;
       font-size: 13px;
       text-align: center;
-      white-space: normal;         /* allow wrapping */
+      white-space: normal;
       line-height: 1.2;
       max-width: 100%;
     }
@@ -454,7 +452,7 @@
     }
 
     .mini-bar-label {
-      width: 80px;
+      width: 110px;
       color: var(--text-soft);
     }
 
@@ -481,6 +479,113 @@
 
     .insights-list li {
       margin-bottom: 4px;
+    }
+
+    /* Strategy row: quadrant + risk chart */
+    .strategy-row {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1.6fr 1.2fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .strategy-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .quadrant {
+      margin-top: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      background: rgba(255, 252, 247, 0.95);
+      padding: 10px;
+      position: relative;
+    }
+
+    .quadrant-inner {
+      position: relative;
+      width: 100%;
+      padding-bottom: 100%;
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      background-image:
+        linear-gradient(to right, rgba(226, 203, 182, 0.6) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(226, 203, 182, 0.6) 1px, transparent 1px);
+      background-size: 25% 25%;
+      overflow: hidden;
+    }
+
+    .quadrant-x-label,
+    .quadrant-y-label {
+      position: absolute;
+      font-size: 10px;
+      color: var(--text-soft);
+    }
+
+    .quadrant-x-label {
+      left: 50%;
+      bottom: 2px;
+      transform: translateX(-50%);
+    }
+
+    .quadrant-y-label {
+      top: 50%;
+      left: 4px;
+      transform: translateY(-50%) rotate(-90deg);
+      transform-origin: left center;
+    }
+
+    .quadrant-point {
+      position: absolute;
+      width: 11px;
+      height: 11px;
+      border-radius: 999px;
+      border: 2px solid #fffaf5;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+    }
+
+    .quad-enter {
+      background: var(--good);
+    }
+
+    .quad-partner {
+      background: var(--accent-strong);
+    }
+
+    .quad-watch {
+      background: var(--watch);
+    }
+
+    .quad-avoid {
+      background: var(--bad);
+    }
+
+    .quadrant-legend {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--text-soft);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .quad-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .quad-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      border: 1px solid #fffaf5;
+      box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
     }
 
     .footer-note {
@@ -574,6 +679,42 @@
         </aside>
       </div>
 
+      <div class="strategy-row">
+        <section class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Attractiveness vs feasibility</div>
+            <div class="panel-subtitle">Equity research lens</div>
+          </div>
+          <div class="quadrant">
+            <div class="quadrant-inner" id="quadrantInner"></div>
+            <div class="quadrant-x-label">Higher feasibility →</div>
+            <div class="quadrant-y-label">Higher attractiveness ↑</div>
+          </div>
+          <div class="quadrant-legend">
+            <div class="quad-legend-item">
+              <span class="quad-dot quad-enter"></span><span>Enter</span>
+            </div>
+            <div class="quad-legend-item">
+              <span class="quad-dot quad-partner"></span><span>Partner</span>
+            </div>
+            <div class="quad-legend-item">
+              <span class="quad-dot quad-watch"></span><span>Watch</span>
+            </div>
+            <div class="quad-legend-item">
+              <span class="quad-dot quad-avoid"></span><span>Avoid</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Risk and timing snapshot</div>
+            <div class="panel-subtitle">Filtered set</div>
+          </div>
+          <div id="riskChart" class="mini-chart"></div>
+        </section>
+      </div>
+
       <div class="footer-note">
         All figures are directional and simplified to support discussion, not investment decisions.
       </div>
@@ -596,6 +737,12 @@
         dealActivity: 9.0,
         investorMomentum: 8.8,
         recommendation: "partner",
+        // Equity research feasibility lens
+        timeToMarket: 6.0,          // years
+        probSuccess: 0.18,          // 0 to 1
+        clinicalRisk: 8.0,          // 1 low, 10 high
+        phaseCost: 8.5,             // 1 low, 10 high
+        cashNeed: 8.0,
         rationaleShort: "Crowded but still high value for differentiated mechanisms and smart combinations.",
         personaNotes: {
           founder: "Differentiation is everything here. Strong biomarkers, niche indications and combo rationale are essential.",
@@ -618,6 +765,11 @@
         dealActivity: 7.5,
         investorMomentum: 7.8,
         recommendation: "enter",
+        timeToMarket: 5.0,
+        probSuccess: 0.24,
+        clinicalRisk: 6.0,
+        phaseCost: 7.0,
+        cashNeed: 7.0,
         rationaleShort: "High unmet need and payer tolerance for premium pricing, with manageable competition.",
         personaNotes: {
           founder: "Attractive if you can secure strong natural history data and credible KOL backing.",
@@ -640,6 +792,11 @@
         dealActivity: 7.8,
         investorMomentum: 7.0,
         recommendation: "partner",
+        timeToMarket: 4.5,
+        probSuccess: 0.22,
+        clinicalRisk: 5.5,
+        phaseCost: 6.5,
+        cashNeed: 6.0,
         rationaleShort: "Significant established markets with biosimilar pressure and room for best in class plays.",
         personaNotes: {
           founder: "Differentiation on convenience, safety profile and payer friendliness matters more than novel biology.",
@@ -662,6 +819,11 @@
         dealActivity: 8.7,
         investorMomentum: 8.2,
         recommendation: "partner",
+        timeToMarket: 6.5,
+        probSuccess: 0.16,
+        clinicalRisk: 8.5,
+        phaseCost: 9.0,
+        cashNeed: 9.0,
         rationaleShort: "Technical and operational complexity favours platforms and partnerships.",
         personaNotes: {
           founder: "Manufacturing, COGS and centre of excellence adoption are as important as the science.",
@@ -684,6 +846,11 @@
         dealActivity: 8.3,
         investorMomentum: 8.9,
         recommendation: "enter",
+        timeToMarket: 4.0,
+        probSuccess: 0.23,
+        clinicalRisk: 6.0,
+        phaseCost: 7.5,
+        cashNeed: 8.0,
         rationaleShort: "Emerging modality with strong momentum and clear value in genetically defined populations.",
         personaNotes: {
           founder: "Sharpen your story on delivery, durability and manufacturability.",
@@ -706,6 +873,11 @@
         dealActivity: 7.0,
         investorMomentum: 6.5,
         recommendation: "watch",
+        timeToMarket: 7.0,
+        probSuccess: 0.12,
+        clinicalRisk: 9.0,
+        phaseCost: 8.0,
+        cashNeed: 8.0,
         rationaleShort: "Huge burden and recent wins, but biology is still complex and risk remains high.",
         personaNotes: {
           founder: "Risk profile is high. Clear biomarkers and stratification are non negotiable.",
@@ -728,6 +900,11 @@
         dealActivity: 9.2,
         investorMomentum: 9.5,
         recommendation: "watch",
+        timeToMarket: 5.0,
+        probSuccess: 0.20,
+        clinicalRisk: 7.5,
+        phaseCost: 7.5,
+        cashNeed: 8.0,
         rationaleShort: "Explosive growth and deal activity, but space is consolidating around a few heavyweights.",
         personaNotes: {
           founder: "Position yourself in niches, combos or adjacent services rather than core GLP1 competition.",
@@ -750,6 +927,11 @@
         dealActivity: 4.0,
         investorMomentum: 3.0,
         recommendation: "avoid",
+        timeToMarket: 8.0,
+        probSuccess: 0.10,
+        clinicalRisk: 8.0,
+        phaseCost: 5.0,
+        cashNeed: 7.0,
         rationaleShort: "Scientific need is high, but commercial models and incentives remain challenging.",
         personaNotes: {
           founder: "Only attractive if you have a clear path to non traditional reimbursement or pull incentives.",
@@ -830,6 +1012,41 @@
       });
     }
 
+    function computeAttractiveness(area) {
+      const growthScore = Math.min(area.cagr / 3, 10);
+      const tamScore = Math.min(area.tamUSD / 12, 10);
+      const competitionPenalty = 10 - area.competition * 0.7;
+      const unmetScore = area.unmetNeed;
+      const momentumScore = area.investorMomentum;
+
+      const raw =
+        growthScore * 0.2 +
+        tamScore * 0.2 +
+        competitionPenalty * 0.15 +
+        unmetScore * 0.2 +
+        momentumScore * 0.25;
+
+      return Math.max(2, Math.min(9.8, raw));
+    }
+
+    function computeFeasibilityEquity(area) {
+      const successScore = area.probSuccess * 10; // 0 to 10
+      const rawTime = 10 - (area.timeToMarket - 3) * 1.3; // shorter time better
+      const timeScore = Math.max(0, Math.min(10, rawTime));
+      const riskScore = 10 - area.clinicalRisk;
+      const costScore = 10 - area.phaseCost;
+      const cashScore = 10 - area.cashNeed;
+
+      const raw =
+        successScore * 0.3 +
+        timeScore * 0.2 +
+        riskScore * 0.2 +
+        costScore * 0.15 +
+        cashScore * 0.15;
+
+      return Math.max(1.5, Math.min(9.5, raw));
+    }
+
     function renderKpis(filtered) {
       const kpiGrid = document.getElementById("kpiGrid");
       kpiGrid.innerHTML = "";
@@ -854,26 +1071,8 @@
         card.appendChild(label);
         card.appendChild(value);
         card.appendChild(sub);
-
         kpiGrid.appendChild(card);
       });
-    }
-
-    function computeAttractiveness(area) {
-      const growthScore = Math.min(area.cagr / 3, 10);
-      const tamScore = Math.min(area.tamUSD / 12, 10);
-      const competitionPenalty = 10 - area.competition * 0.7;
-      const unmetScore = area.unmetNeed;
-      const momentumScore = area.investorMomentum;
-
-      const raw =
-        growthScore * 0.2 +
-        tamScore * 0.2 +
-        competitionPenalty * 0.15 +
-        unmetScore * 0.2 +
-        momentumScore * 0.25;
-
-      return Math.max(2, Math.min(9.8, raw));
     }
 
     function renderAreas() {
@@ -894,6 +1093,7 @@
         const name = document.createElement("div");
         name.className = "area-name";
         name.textContent = a.name;
+
         const tags = document.createElement("div");
         tags.className = "area-tags";
 
@@ -961,9 +1161,12 @@
         activeAreaId = filtered[0].id;
         renderAreas();
         renderDetail(filtered[0]);
+        return;
       }
 
       renderKpis(filtered);
+      renderQuadrant(filtered);
+      renderRiskChart(filtered);
     }
 
     function renderDetail(area) {
@@ -1071,6 +1274,18 @@
         miniChart.appendChild(row);
       });
 
+      const feasScore = computeFeasibilityEquity(area);
+
+      const feasLabel = document.createElement("div");
+      feasLabel.className = "detail-label";
+      feasLabel.style.marginTop = "8px";
+      feasLabel.textContent = "Feasibility (equity lens)";
+
+      const feasBody = document.createElement("div");
+      feasBody.className = "detail-body";
+      feasBody.textContent =
+        "Blended score " + feasScore.toFixed(1) + "/10, combining probability of success, time to market, clinical risk, cost per phase and cash need.";
+
       const insightsLabel = document.createElement("div");
       insightsLabel.className = "detail-label";
       insightsLabel.style.marginTop = "8px";
@@ -1094,8 +1309,117 @@
       panel.appendChild(badges);
       panel.appendChild(detailGrid);
       panel.appendChild(miniChart);
+      panel.appendChild(feasLabel);
+      panel.appendChild(feasBody);
       panel.appendChild(insightsLabel);
       panel.appendChild(insightsList);
+    }
+
+    function renderQuadrant(filtered) {
+      const container = document.getElementById("quadrantInner");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const list = filtered.length ? filtered : areas;
+
+      list.forEach(a => {
+        const attract = computeAttractiveness(a);
+        const feas = computeFeasibilityEquity(a);
+
+        const x = (feas / 10) * 100;
+        const y = (attract / 10) * 100;
+
+        const point = document.createElement("div");
+        point.className = "quadrant-point quad-" + a.recommendation;
+        point.style.left = x + "%";
+        point.style.top = (100 - y) + "%";
+        point.title =
+          a.name +
+          "\nAttractiveness: " + attract.toFixed(1) + "/10" +
+          "\nFeasibility: " + feas.toFixed(1) + "/10";
+
+        point.addEventListener("click", () => {
+          activeAreaId = a.id;
+          renderAreas();
+          renderDetail(a);
+        });
+
+        container.appendChild(point);
+      });
+    }
+
+    function renderRiskChart(filtered) {
+      const chart = document.getElementById("riskChart");
+      if (!chart) return;
+      chart.innerHTML = "";
+
+      const list = filtered.length ? filtered : areas;
+      if (!list.length) {
+        chart.textContent = "No areas selected.";
+        return;
+      }
+
+      let sumProb = 0;
+      let sumTime = 0;
+      let sumRisk = 0;
+
+      list.forEach(a => {
+        sumProb += a.probSuccess;
+        sumTime += a.timeToMarket;
+        sumRisk += a.clinicalRisk;
+      });
+
+      const avgProb = sumProb / list.length;  // 0 to 1
+      const avgTime = sumTime / list.length;  // years
+      const avgRisk = sumRisk / list.length;  // 1 to 10
+
+      const rows = [
+        {
+          label: "Avg probability of success",
+          value: avgProb * 100,
+          unit: "%",
+          max: 100,
+          note: "~" + (avgProb * 100).toFixed(0) + "%"
+        },
+        {
+          label: "Avg time to market",
+          value: avgTime,
+          unit: "years",
+          max: 10,
+          note: "~" + avgTime.toFixed(1) + " years"
+        },
+        {
+          label: "Avg clinical risk",
+          value: avgRisk,
+          unit: "/10",
+          max: 10,
+          note: avgRisk.toFixed(1) + "/10"
+        }
+      ];
+
+      rows.forEach(r => {
+        const row = document.createElement("div");
+        row.className = "mini-bar-row";
+
+        const lab = document.createElement("div");
+        lab.className = "mini-bar-label";
+        lab.textContent = r.label;
+
+        const track = document.createElement("div");
+        track.className = "mini-bar-track";
+        track.title = r.note;
+
+        const fill = document.createElement("div");
+        fill.className = "mini-bar-fill";
+        const widthPct = Math.max(5, Math.min(100, (r.value / r.max) * 100));
+        fill.style.width = widthPct + "%";
+
+        track.appendChild(fill);
+        row.appendChild(lab);
+        row.appendChild(track);
+
+        chart.appendChild(row);
+      });
     }
 
     function attachFilterHandlers() {
@@ -1141,3 +1465,4 @@
   </script>
 </body>
 </html>
+
